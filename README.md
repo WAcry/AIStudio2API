@@ -127,4 +127,4 @@ curl http://localhost:3060/v1/chat/completions \
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](AIStudio2OpenAI/LICENSE) file for details.
