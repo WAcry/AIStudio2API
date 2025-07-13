@@ -101,30 +101,37 @@ namespace AIStudio2OpenAI.Services
                 }
 
                 var fullPrompt = promptBuilder.ToString().Trim();
+                _logger.LogInformation("Prompt Length: {PromptLength}", fullPrompt.Length);
+                await page.EvaluateAsync("""
+                                             () => {
+                                                 const wrapper = document.querySelector('.text-wrapper');
+                                                 if (wrapper) {
+                                                     wrapper.style.visibility = 'hidden';
+                                                 }
+                                             }
+                                         """);
+                await promptInput.EvaluateAsync("""
+                                                (element, text) => {
+                                                    element.value = text;
+                                                    element.dispatchEvent(new Event('input', { bubbles: true }));
+                                                    element.dispatchEvent(new Event('change', { bubbles: true }));
+                                                }
+                                                """, fullPrompt);
 
-                await promptInput.FillAsync(fullPrompt);
-                await page.EvaluateAsync("""
-                                         () => {
-                                                     const textarea = document.querySelector('ms-autosize-textarea textarea');
-                                                     if (textarea) {
-                                                         textarea.style.display = 'none';
-                                                     }
-                                                 }
-                                         """);
-                await page.EvaluateAsync("""
-                                         () => {
-                                                     const div = document.querySelector('.very-large-text-container');
-                                                     if (div) {
-                                                         div.style.display = 'none';
-                                                     }
-                                                 }
-                                         """);
                 await Task.Delay(1000);
  
                 var inputTokenCount = await GetCurrentTokenCountAsync(page);
 
                 await Assertions.Expect(runButton).ToBeEnabledAsync(new() { Timeout = 15_000 });
                 await ClickWithRandomDelayAsync(runButton);
+                await page.EvaluateAsync("""
+                                         () => {
+                                                     const div = document.querySelector('.very-large-text-container');
+                                                     if (div) {
+                                                         div.style.visibility = 'hidden';
+                                                     }
+                                                 }
+                                         """);
                 await Task.Delay(1000);
 
                 await Assertions.Expect(stopButton).ToBeVisibleAsync(new() { Timeout = 15_000 });
