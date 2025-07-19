@@ -87,8 +87,8 @@ namespace AIStudio2OpenAI.Helpers
             await ToggleSwitchByLabelAsync(page, "Toggle thinking budget between auto and manual", true, logger);
 
             var settingWrapper = page.Locator("[data-test-id='user-setting-budget-animation-wrapper']");
-            var numberInput = settingWrapper.Locator("input.slider-input[type='number']");
-            await numberInput.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5000 });
+            var numberInput = settingWrapper.Locator("input[type='number']");
+            await numberInput.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10000 });
 
             string? maxValueString = await numberInput.GetAttributeAsync("max");
             if (maxValueString != null)
@@ -126,7 +126,7 @@ namespace AIStudio2OpenAI.Helpers
         
         private static async Task ClickWithRandomDelayAsync(ILocator locator)
         {
-            await Task.Delay(_random.Next(500, 2000));
+            await Task.Delay(_random.Next(1000, 4000));
             await locator.ClickAsync();
         }
     }
